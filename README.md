@@ -13,6 +13,7 @@ im header.tpl
 
 Templates:
 
+```
 characterAlert_index:
   <div class="char_alertBox pm_alert">
   {$characterAlert_row}
@@ -20,3 +21,4 @@ characterAlert_index:
 
 characterAlert_row:
   <strong><a id="switch_{$alertTo['uid']}" href="#switch" class="switchlink">{$username}</span></a></strong> hat neue Alerts. <br/>
+```
