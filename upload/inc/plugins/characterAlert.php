@@ -34,6 +34,11 @@ function characterAlert_info()
 
 function characterAlert_is_installed()
 {
+    global $db;
+    if ($db->field_exists("characterAlert", "users")){
+        return true;
+    }
+    return false;
 }
 
 function characterAlert_install()
@@ -55,13 +60,33 @@ function characterAlert_install()
     $insert_array = array(
         'title'        => 'characterAlert_row',
         'template'    => '
-        <strong><a id="switch_{$alertTo[\\\'uid\\\']}" href="#switch" class="switchlink">{$username}</span></a></strong> hat neue Alerts. <br/>
+        <strong><a id="switch_{$alertTo[\\\uid\\\]}" href="#switch" class="switchlink">{$username}</span></a></strong> hat neue Alerts. <br/>
         ',
         'sid'        => '-1',
         'version'    => '',
         'dateline'    => TIME_NOW
     );
     $db->insert_query("templates", $insert_array);
+
+    $insert_array = array(
+        'title'        => 'characterAlert_ucp',
+        'template'    => '
+        <tr>
+        <td colspan="2"> <fieldset>
+        <legend>Characteralert</legend>
+            Benachrichtung, wenn einer deiner verbundenen Charaktere einen Alert hat?
+        <input type="radio" name="characterAlert" value ="1" {$cayes}> Ja <br>
+        <input type="radio" name="characterAlert" value ="0" {$cano}> Nein<br>
+        </fieldset>
+        </td>
+        </tr>
+        ',
+        'sid'        => '-1',
+        'version'    => '',
+        'dateline'    => TIME_NOW
+    );
+    $db->insert_query("templates", $insert_array);
+    $db->add_column("users", "characterAlert", "INT(1) NOT NULL default '1'");
 }
 
 function characterAlert_uninstall()
@@ -69,6 +94,9 @@ function characterAlert_uninstall()
     global $db;
     //remove templates
     $db->delete_query("templates", "title LIKE 'characterAlert_%'");
+    if ($db->field_exists("characterAlert", "users")) {
+        $db->write_query("ALTER TABLE `" . TABLE_PREFIX . "users` DROP `characterAlert`;");
+    }
 }
 
 function characterAlert_activate()
@@ -76,12 +104,14 @@ function characterAlert_activate()
     //im memberprofil variable hinzufügen
     include  MYBB_ROOT . "/inc/adminfunctions_templates.php";
     find_replace_templatesets("header", "#" . preg_quote('{$pm_notice}') . "#i", '{$pm_notice}{$characterAlert}');
+    find_replace_templatesets("usercp_profile", "#" . preg_quote('{$contactfields}') . "#i", '{$contactfields}{$characterAlert_ucp}');
 }
 
 function characterAlert_deactivate()
 {
     include  MYBB_ROOT . "/inc/adminfunctions_templates.php";
     find_replace_templatesets("header", "#" . preg_quote('{$characterAlert}') . "#i", '');
+    find_replace_templatesets("usercp_profile", "#" . preg_quote('{$characterAlert_ucp}') . "#i", '');
 }
 
 $plugins->add_hook('global_start', 'characterAlert_header');
@@ -104,22 +134,53 @@ function characterAlert_header()
         if ($thisuser != $alertTo['uid']) {
             eval("\$characterAlert_row .= \"" . $templates->get("characterAlert_row") . "\";");
         }
+
         if ($thisuser == $alertTo['uid']) {
             $flag = 1;
         }
     }
-    if ($rownum > 0) {
+    $check = $db->fetch_field($db->simple_select("users", "characterAlert", "uid = " . (int)$mybb->user['uid'] . ""), "characterAlert");
+    if ($rownum > 0 AND $check == 1) {
+     
         if ($flag != 1) {
-            eval("\$characterAlert= \"" . $templates->get("characterAlert_index") . "\";");
+                eval("\$characterAlert= \"" . $templates->get("characterAlert_index") . "\";");
+        } else {
+            $characterAlert ="";
         }
     }
+}
+
+$plugins->add_hook('usercp_profile_start', 'characterAlert_edit_profile');
+function characterAlert_edit_profile()
+{
+    global $mybb, $db, $templates, $characterAlert_ucp;
+
+    $check = $db->fetch_field($db->simple_select("users", "characterAlert", "uid = " . $mybb->user['uid'] . ""), "characterAlert");
+
+    if ($check == 1) {
+        $cayes = 'checked="checked"';
+        $cano = '';
+    } else {
+        $cayes = '';
+        $cano = 'checked="checked"';
+    }
+    eval("\$characterAlert_ucp.=\"" . $templates->get("characterAlert_ucp") . "\";");
+}
+
+$plugins->add_hook('usercp_do_profile_start', 'characterAlert_edit_profile_do');
+function characterAlert_edit_profile_do()
+{
+    global $mybb, $db;
+    $characterAlert_check =  (int) $mybb->input['characterAlert'];
+    $uid = getCharacters();
+
+    $db->query("UPDATE " . TABLE_PREFIX . "users SET characterAlert =" . $characterAlert_check . " WHERE uid IN (" . $uid . ")");
 }
 
 /**
  * Get the shared Accounts from Accountswitcher
  * @return string all_uids 
  */
-//EIGENE ÄNDERUNG
 function getCharacters()
 {
     global $db, $mybb;
