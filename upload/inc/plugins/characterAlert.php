@@ -23,7 +23,7 @@ function characterAlert_info()
     global $lang, $db, $plugins_cache, $mybb;
 
     return array(
-        "name" => "Alertsanzeige für Mehrfachcharaktere",
+        "name" => "CharacterAlert - Anzeige für Mehrfachcharaktere",
         "description" => "Zeigt eine Meldung an, wenn verbundene Charaktere neue Alerts haben",
         "author" => "risuena",
         "authorsite" => "https://lslv.de/risu",
@@ -60,7 +60,7 @@ function characterAlert_install()
     $insert_array = array(
         'title'        => 'characterAlert_row',
         'template'    => '
-        <strong><a id="switch_{$alertTo[\\\uid\\\]}" href="#switch" class="switchlink">{$username}</span></a></strong> hat neue Alerts. <br/>
+        <strong><a id="switch_{$alertTo[\\\'uid\\\']}" href="#switch" class="switchlink">{$username}</span></a></strong> hat neue Alerts. <br/>
         ',
         'sid'        => '-1',
         'version'    => '',
@@ -71,15 +71,17 @@ function characterAlert_install()
     $insert_array = array(
         'title'        => 'characterAlert_ucp',
         'template'    => '
+        <table cellspacing="0" cellpadding="0"> 
         <tr>
-        <td colspan="2"> <fieldset>
-        <legend>Characteralert</legend>
-            Benachrichtung, wenn einer deiner verbundenen Charaktere einen Alert hat?
-        <input type="radio" name="characterAlert" value ="1" {$cayes}> Ja <br>
-        <input type="radio" name="characterAlert" value ="0" {$cano}> Nein<br>
+        <td colspan="2"> 
+			<fieldset class="trow2">
+				<legend><strong>Characteralert</strong></legend>
+            Benachrichtigung, wenn einer deiner verbundenen Charaktere einen Alert hat?<br/>
+        <input type="radio" name="characterAlert" value ="1" {$cayes}> Ja   <input type="radio" name="characterAlert" value ="0" {$cano}> Nein<br/>
         </fieldset>
         </td>
         </tr>
+       </table>
         ',
         'sid'        => '-1',
         'version'    => '',
