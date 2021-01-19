@@ -5,7 +5,7 @@ Enhanced Account Switcher ist unbedingt nötig. Sonst funktioniert das Plugin in
 
 Das Plugin zeigt eine Meldung (wie bei einer PN) an, wenn ein verbundener Charakter einen neuen Alert hat. 
 
-Keine Änderungen in der Datenbank.
+In der Datenbank wird in der Tabelle users ein Feld eingefügt, damit der Benutzer einstellen kann, ob er die Alerts angezeigt bekommt, oder nicht.
 
 Variable
 im header.tpl
