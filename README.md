@@ -21,4 +21,17 @@ characterAlert_index:
 
 characterAlert_row:
   <strong><a id="switch_{$alertTo['uid']}" href="#switch" class="switchlink">{$username}</span></a></strong> hat neue Alerts. <br/>
+  
+characterAlert_ucp:
+  <table cellspacing="0" cellpadding="0"> 
+  <tr>
+  <td colspan="2"> 
+	<fieldset class="trow2">
+	<legend><strong>Characteralert</strong></legend>
+  Benachrichtigung, wenn einer deiner verbundenen Charaktere einen Alert hat?<br/>
+  <input type="radio" name="characterAlert" value ="1" {$cayes}> Ja   <input type="radio" name="characterAlert" value ="0" {$cano}> Nein<br/>
+  </fieldset>
+  </td>
+  </tr>
+  </table>
 ```
