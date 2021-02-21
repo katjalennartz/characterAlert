@@ -35,7 +35,7 @@ function characterAlert_info()
 function characterAlert_is_installed()
 {
     global $db;
-    if ($db->field_exists("characterAlert", "users")){
+    if ($db->field_exists("characterAlert", "users")) {
         return true;
     }
     return false;
@@ -105,15 +105,15 @@ function characterAlert_activate()
 {
     //im memberprofil variable hinzufügen
     include  MYBB_ROOT . "/inc/adminfunctions_templates.php";
-    find_replace_templatesets("header", "#" . preg_quote('{$pm_notice}') . "#i", '{$pm_notice}{$characterAlert}');
-    find_replace_templatesets("usercp_profile", "#" . preg_quote('{$contactfields}') . "#i", '{$contactfields}{$characterAlert_ucp}');
+    find_replace_templatesets('header', "#" . preg_quote('{$pm_notice}') . "#i", '{$pm_notice}{$characterAlert}');
+    find_replace_templatesets('usercp_profile', "#" . preg_quote('{$contactfields}') . "#i", '{$contactfields}{$characterAlert_ucp}');
 }
 
 function characterAlert_deactivate()
 {
     include  MYBB_ROOT . "/inc/adminfunctions_templates.php";
-    find_replace_templatesets("header", "#" . preg_quote('{$characterAlert}') . "#i", '');
-    find_replace_templatesets("usercp_profile", "#" . preg_quote('{$characterAlert_ucp}') . "#i", '');
+    find_replace_templatesets('header', "#" . preg_quote('{$characterAlert}') . "#i", '');
+    find_replace_templatesets('usercp_profile', "#" . preg_quote('{$characterAlert_ucp}') . "#i", '');
 }
 
 $plugins->add_hook('global_start', 'characterAlert_header');
@@ -134,20 +134,16 @@ function characterAlert_header()
             $user['displaygroup']
         );
         if ($thisuser != $alertTo['uid']) {
-            eval("\$characterAlert_row .= \"" . $templates->get("characterAlert_row") . "\";");
-        }
-
-        if ($thisuser == $alertTo['uid']) {
             $flag = 1;
+            eval("\$characterAlert_row .= \"" . $templates->get("characterAlert_row") . "\";");
         }
     }
     $check = $db->fetch_field($db->simple_select("users", "characterAlert", "uid = " . (int)$mybb->user['uid'] . ""), "characterAlert");
-    if ($rownum > 0 AND $check == 1) {
-     
-        if ($flag != 1) {
-                eval("\$characterAlert= \"" . $templates->get("characterAlert_index") . "\";");
+    if ($rownum > 0 and $check == 1) {
+        if ($flag == 1) {
+            eval("\$characterAlert= \"" . $templates->get("characterAlert_index") . "\";");
         } else {
-            $characterAlert ="";
+            $characterAlert="";
         }
     }
 }
